@@ -133,7 +133,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core */ "./src/js/lib/core.js");
 /* harmony import */ var _modules_display__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/display */ "./src/js/lib/modules/display.js");
 /* harmony import */ var _modules_classes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/classes */ "./src/js/lib/modules/classes.js");
-/* harmony import */ var _modules_actions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/actions */ "./src/js/lib/modules/actions.js");
+/* harmony import */ var _modules_handlers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/handlers */ "./src/js/lib/modules/handlers.js");
+/* harmony import */ var _modules_attributes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/attributes */ "./src/js/lib/modules/attributes.js");
+/* harmony import */ var _modules_actions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/actions */ "./src/js/lib/modules/actions.js");
+
+
 
 
 
@@ -154,37 +158,165 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core */ "./src/js/lib/core.js");
 
 
-_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.on = function (eventName, callback) {
-  if (!eventName || !callback) {
-    return this;
-  }
-
-  for (let i = 0; i < this.length; i++) {
-    this[i].addEventListener(eventName, callback);
-  }
-
-  return this;
-};
-
-_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.off = function (eventName, callback) {
-  if (!eventName || !callback) {
-    return this;
-  }
-
-  for (let i = 0; i < this.length; i++) {
-    this[i].removeEventListener(eventName, callback);
-  }
-
-  return this;
-};
-
-_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.click = function (handler) {
-  for (let i = 0; i < this.length; i++) {
-    if (handler) {
-      this[i].addEventListener('click', handler);
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.html = function (content) {
+  //  get inner HTML content or write it
+  for (let i = 0; this.length; i++) {
+    if (content) {
+      this[i].innerHTML = content;
     } else {
-      this[i].click();
+      return this[i].innerHTML;
     }
+
+    return this;
+  }
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.eq = function (i) {
+  //  get elem with i number
+  const swap = this[i];
+  const objLength = Object.keys(this).length;
+
+  for (let i = 0; i < objLength; i++) {
+    delete this[i];
+  }
+
+  this[0] = swap;
+  this.length = 1;
+  return this;
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.index = function () {
+  //  get number of all children
+  const parent = this[0].parentNode;
+  const children = [...parent.children];
+
+  const findMyIndex = item => {
+    return item == this[0];
+  };
+
+  return children.findIndex(findMyIndex);
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.find = function (selector) {
+  //  get selector elems of the parent
+  let numberOfItems = 0,
+      counter = 0;
+  const copyObj = Object.assign({}, this);
+
+  for (let i = 0; i < copyObj.length; i++) {
+    const arr = copyObj[i].querySelectorAll(selector);
+
+    if (arr.length == 0) {
+      continue;
+    }
+
+    for (let j = 0; j < arr.length; j++) {
+      this[counter] = arr[j];
+      counter++;
+    }
+
+    numberOfItems += arr.length;
+  }
+
+  this.length = numberOfItems;
+  const objLength = Object.keys(this).length;
+
+  for (; numberOfItems < objLength; numberOfItems++) {
+    delete this[numberOfItems];
+  }
+
+  return this;
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.closest = function (selector) {
+  //  get closest selector elems
+  let counter = 0;
+
+  for (let i = 0; i < this.length; i++) {
+    if (this[i].closest(selector)) {
+      this[i] = this[i].closest(selector);
+      counter++;
+    }
+  }
+
+  this.length = counter;
+  const objLength = Object.keys(this).length;
+
+  for (; counter < objLength; counter++) {
+    delete this[counter];
+  }
+
+  return this;
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.siblings = function () {
+  //  get element siblings
+  let numberOfItems = 0,
+      counter = 0;
+  const copyObj = Object.assign({}, this);
+
+  for (let i = 0; i < copyObj.length; i++) {
+    const arr = copyObj[i].parentNode.children;
+
+    for (let j = 0; j < arr.length; j++) {
+      if (copyObj[i] === arr[j]) {
+        continue;
+      }
+
+      this[counter] = arr[j];
+      counter++;
+    }
+
+    numberOfItems += arr.length - 1;
+  }
+
+  this.length = numberOfItems;
+  const objLength = Object.keys(this).length;
+
+  for (; numberOfItems < objLength; numberOfItems++) {
+    delete this[numberOfItems];
+  }
+
+  return this;
+};
+
+/***/ }),
+
+/***/ "./src/js/lib/modules/attributes.js":
+/*!******************************************!*\
+  !*** ./src/js/lib/modules/attributes.js ***!
+  \******************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core */ "./src/js/lib/core.js");
+
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.addAttr = function (attrName, attrValue) {
+  if (!attrName) {
+    return this;
+  }
+
+  if (attrValue === undefined) {
+    attrValue = '';
+  }
+
+  for (let i = 0; i < this.length; i++) {
+    this[i].setAttribute(attrName, attrValue);
+  }
+
+  return this;
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.removeAttr = function (attrName) {
+  if (!attrName) {
+    return this;
+  }
+
+  for (let i = 0; i < this.length; i++) {
+    this[i].removeAttribute(attrName);
   }
 
   return this;
@@ -294,6 +426,56 @@ _core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.toggle = function () {
 
 /***/ }),
 
+/***/ "./src/js/lib/modules/handlers.js":
+/*!****************************************!*\
+  !*** ./src/js/lib/modules/handlers.js ***!
+  \****************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core */ "./src/js/lib/core.js");
+
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.on = function (eventName, callback) {
+  if (!eventName || !callback) {
+    return this;
+  }
+
+  for (let i = 0; i < this.length; i++) {
+    this[i].addEventListener(eventName, callback);
+  }
+
+  return this;
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.off = function (eventName, callback) {
+  if (!eventName || !callback) {
+    return this;
+  }
+
+  for (let i = 0; i < this.length; i++) {
+    this[i].removeEventListener(eventName, callback);
+  }
+
+  return this;
+};
+
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.click = function (handler) {
+  for (let i = 0; i < this.length; i++) {
+    if (handler) {
+      this[i].addEventListener('click', handler);
+    } else {
+      this[i].click();
+    }
+  }
+
+  return this;
+};
+
+/***/ }),
+
 /***/ "./src/js/main.js":
 /*!************************!*\
   !*** ./src/js/main.js ***!
@@ -305,9 +487,66 @@ _core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.toggle = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib_lib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/lib */ "./src/js/lib/lib.js");
 
-$('button').click(function () {
-  $(this).toggleClass('active');
+$('button').on('click', function () {
+  $('div').eq(2).toggleClass('active');
 });
+$('div').click(function () {
+  console.log($(this).index());
+}); // console.log($('div').eq(2).find('.some'));
+
+console.log($('.findme').siblings()); // function checkBrackets(str) {
+//     let counterL = 0, counterR = 0;
+//     for (let i = 0; i < str.length; i++) {
+//         if (str[i] === '(') {
+//             counterL++;
+//         } else if (str[i] === ')') {
+//             counterR++;
+//         }
+//     }
+// }
+
+let testStr1 = "()()()((()))"; // true
+
+let testStr2 = "())(())()((()))"; // false
+
+let testStr3 = "(()(())()(()))"; //true
+
+let testStr4 = "))"; // false
+
+function checkBrackets(str) {
+  let stack = '';
+
+  for (let i = 0; i < str.length; i++) {
+    switch (str[i]) {
+      case '(':
+        stack += '(';
+        break;
+
+      case ')':
+        if (stack) {
+          stack = stack.slice(0, -1);
+        } else {
+          return false;
+        }
+
+        break;
+    }
+  }
+
+  if (stack === '') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+console.log(checkBrackets(testStr1));
+console.log(checkBrackets(testStr2));
+console.log(checkBrackets(testStr3));
+console.log(checkBrackets(testStr4)); // console.log(Array.from(testStr.matchAll(/\(/g)));
+// for (let elem of testStr.matchAll(/\(/g)) {
+//     console.log(elem);
+// }
 
 /***/ })
 
